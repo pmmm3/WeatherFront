@@ -1,0 +1,71 @@
+<div class="containerX" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-md="row">
+  <mat-card class="space-card">
+    <form>
+      <mat-card-content>
+        <mat-form-field class="input-form" appearance="fill">
+          <mat-label>City Code</mat-label>
+          <input matInput type="text" placeholder="City Code" #cityCode>
+        </mat-form-field>
+      </mat-card-content>
+      <mat-card-actions>
+        <a routerLink="/historical/{{cityCode.value}}">
+          <button mat-raised-button color="primary">
+            Get Historical
+          </button>
+        </a>
+      </mat-card-actions>
+    </form>
+  </mat-card>
+  <div *ngIf="loading" fxLayoutAlign="center center">
+    <mat-spinner></mat-spinner>
+  </div>
+  <table mat-table *ngIf="show"
+         [dataSource]="cities" multiTemplateDataRows
+         class="mat-elevation-z8">
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name</th>
+      <td mat-cell *matCellDef="let element"> {{element.city.name}} </td>
+    </ng-container>
+    <ng-container matColumnDef="latitude">
+      <th mat-header-cell *matHeaderCellDef> Latitude</th>
+      <td mat-cell *matCellDef="let element"> {{element.city.coordinates.lat}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="longitude">
+      <th mat-header-cell *matHeaderCellDef> Longitude</th>
+      <td mat-cell *matCellDef="let element"> {{element.city.coordinates.lon}} </td>
+    </ng-container>
+
+    <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+    <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+    <ng-container matColumnDef="expandedDetail" >
+      <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
+        <div class="example-element-detail" fxLayoutAlign="center center"
+             [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+          <div class="historical" fxLayout="row" fxLayout.lt-sm="column" fxLayoutAlign="center center">
+            <mat-card fxLayoutAlign="center center" *ngFor="let day of element.historical_weather">
+              <mat-card-content  fxLayout="column" fxLayoutAlign="center center">
+                <p>Humidity : {{day.environment.humidity}}</p>
+                <p>pressure : {{day.environment.pressure}}</p>
+                <p>temp : {{day.environment.temp}}</p>
+                <p>temp_max : {{day.environment.temp_max}}</p>
+                <p>temp_min : {{day.environment.temp_min}}</p>
+                <p>Weather : {{day.environment.weather}} - {{day.environment.weather_description}}</p>
+              </mat-card-content>
+            </mat-card>
+
+
+          </div>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+    <tr mat-row *matRowDef="let element; columns: columnsToDisplay;"
+        class="example-element-row"
+        [class.example-expanded-row]="expandedElement === element"
+        (click)="expandedElement = expandedElement === element ? null : element">
+    </tr>
+    <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+  </table>
+</div>
